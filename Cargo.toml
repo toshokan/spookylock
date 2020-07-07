@@ -3,6 +3,4 @@
 members = [
 	"spookylock-sys",
 	"spookylock",
-	"stream-switch"
-	
 ]

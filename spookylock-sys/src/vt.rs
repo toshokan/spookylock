@@ -9,6 +9,19 @@ mod sys {
 
 use std::fs::File;
 use std::marker::PhantomData;
+use std::os::unix::io::RawFd;
+
+pub fn set_controlling_tty(fd: RawFd) -> std::io::Result<()> {
+    let ret = unsafe {
+        libc::setsid();
+        libc::ioctl(fd, libc::TIOCSCTTY, 0)
+    };
+    if ret == -1 {
+        Err(std::io::Error::last_os_error())
+    } else {
+        Ok(())
+    }
+}
 
 #[derive(Debug)]
 pub struct Console {
@@ -108,7 +121,6 @@ trait IoctlConsole {
     fn wait_active(&self, vt: &Vt);
     fn lockswitch(&self);
     fn unlockswitch(&self);
-    fn resize_current_vt(&self, rows: i32, cols: i32);
     unsafe fn disallocate(&self, vt: &Vt);
 }
 
@@ -166,23 +178,6 @@ impl IoctlConsole for Inner {
         }
     }
 
-    fn resize_current_vt(&self, rows: i32, cols: i32) {
-        use std::convert::TryInto;
-
-        let size = sys::vt_sizes {
-            v_rows: rows.try_into().unwrap(),
-            v_cols: cols.try_into().unwrap(),
-            v_scrollsize: 0,
-        };
-        unsafe {
-            libc::ioctl(
-                self.fd(),
-                sys::VT_RESIZE.into(),
-                &size as *const sys::vt_sizes,
-            );
-        }
-    }
-
     unsafe fn disallocate(&self, vt: &Vt) {
         let n: libc::c_int = vt.number.0;
         libc::ioctl(self.fd(), sys::VT_DISALLOCATE.into(), n);
@@ -234,52 +229,12 @@ pub struct VtStream<'vt> {
     _vt: PhantomData<&'vt ()>,
 }
 
-#[derive(Debug)]
-pub struct VtSize {
-    pub rows: u16,
-    pub cols: u16,
-}
-
 impl<'vt> VtStream<'vt> {
-    pub fn try_clone(&self) -> std::io::Result<Self> {
-        let file = self.file.try_clone()?;
-        Ok(Self::with_file(file))
-    }
-
     pub fn with_file(file: File) -> Self {
         Self {
             file,
             _vt: PhantomData,
         }
-    }
-
-    // pub fn size(&self) -> std::io::Result<VtSize> {
-    //     use std::os::unix::io::AsRawFd;
-    //     unsafe {
-    //         let mut s: libc::winsize = std::mem::zeroed();
-    //         libc::ioctl(
-    //             self.file.as_raw_fd(),
-    //             libc::TIOCGWINSZ,
-    //             &mut s as *mut libc::winsize,
-    //         );
-    //         Ok(VtSize {
-    //             rows: s.ws_row,
-    //             cols: s.ws_col,
-    //         })
-    //     }
-    // }
-
-    pub fn set_as_controlling_tty(&self) -> std::io::Result<()> {
-	use std::os::unix::io::AsRawFd;
-	let ret = unsafe {
-	    libc::setsid();
-	    libc::ioctl(self.as_raw_fd(), libc::TIOCSCTTY, 0)
-	};
-	if ret == -1 {
-	    Err(std::io::Error::last_os_error())
-	} else {
-	    Ok(())
-	}
     }
 
     pub fn from_vt(vt: &'vt Vt) -> std::io::Result<Self> {
@@ -296,21 +251,5 @@ impl<'vt> VtStream<'vt> {
 impl<'vt> std::os::unix::io::AsRawFd for VtStream<'vt> {
     fn as_raw_fd(&self) -> i32 {
         self.file.as_raw_fd()
-    }
-}
-
-impl<'vt> std::io::Read for VtStream<'vt> {
-    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        self.file.read(buf)
-    }
-}
-
-impl<'vt> std::io::Write for VtStream<'vt> {
-    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        self.file.write(buf)
-    }
-
-    fn flush(&mut self) -> std::io::Result<()> {
-        self.file.flush()
     }
 }
