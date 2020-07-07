@@ -22,7 +22,7 @@ fn main() -> std::io::Result<()> {
     let k = palette[cursive::theme::PaletteColor::Primary];
 
     palette[cursive::theme::PaletteColor::Background] = k;
-    palette[cursive::theme::PaletteColor::Shadow] = b;
+    palette[cursive::theme::PaletteColor::Shadow] = k;
     palette[cursive::theme::PaletteColor::Primary] = b;
     palette[cursive::theme::PaletteColor::Secondary] = k;
     theme.palette = palette;
