@@ -20,8 +20,11 @@ fn main() -> std::io::Result<()> {
 
         let (stdin, stdout, stderr) = make_stdio(fd);
 
+	let path = std::fs::canonicalize("./spookylock-interface")
+	    .expect("Failed to find interface binary");
+
         unsafe {
-            Command::new("/home/toshokan/dev/rust/spookylock/target/debug/spookylock-interface")
+            Command::new(path)
                 .stdin(stdin)
                 .stdout(stdout)
                 .stderr(stderr)
