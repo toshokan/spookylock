@@ -2,6 +2,7 @@ use clap::Clap;
 use cursive::Cursive;
 
 #[derive(Clap)]
+#[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
 struct Options {
     #[clap(short, long)]
     user: String,
