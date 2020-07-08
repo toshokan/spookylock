@@ -11,7 +11,7 @@ use std::process::{Command, Stdio};
 struct Options {
     #[clap(short, long)]
     relative_interface: bool,
-    #[clap(short, long, default_value = "./spookylock-interface")]
+    #[clap(short, long, default_value = "spookylock-interface")]
     interface_path: PathBuf,
 }
 
