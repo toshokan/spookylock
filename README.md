@@ -19,8 +19,8 @@ config.
 Spookylock is designed with a modular architecture. It is used through
 two executables, `spookylock` and `spookylock-interface`. To lock a
 session, users invoke `spookylock`. This program's responsibility is
-to switch to a new blank controlling VT/TTY, and ensure that the user
-cannot leave. 
+to switch to a new blank controlling VT/TTY and ensure that the user
+cannot leave.
 
 It launches `spookylock-interface` on that VT to do the actual IO with
 the user. This program initializes the TUI, draws the interface, asks
@@ -37,10 +37,10 @@ be invoked as `yourprogram --user <user>` where `<user>` is the
 contents of the `$USER` variable when `spookylock` is invoked.
 
 If you want to change which program `spookylock` invokes you can use
-its command line options. If you want to use another program on $PATH,
-invoke it as `spookylock -i <yourprogram>`. If you have a (relative or
-absolute) path to an interface program instead, invoke it was
-`spookylock -r -i <path/to/yourprogram>`
+its command line options. If you want to use another program on
+`$PATH`, invoke it as `spookylock -i <yourprogram>`. If you have a
+(relative or absolute) path to an interface program instead, invoke it
+as `spookylock -r -i <path/to/yourprogram>`
 
 ## Installation
 
