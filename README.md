@@ -13,7 +13,7 @@ Unlike physlock, spookylock uses a (very simple) TUI interface rather
 than a simple password prompt. It decides which user's password will
 unlock the session through the `$USER` environment variable, rather
 than using `systemd` or `elogind`. This means it can be invoked on
-behalf of user system others. It uses the standard `system-auth` PAM
+behalf of other system users. It uses the standard `system-auth` PAM
 config.
 
 Spookylock is designed with a modular architecture. It is used through
