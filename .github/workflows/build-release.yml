@@ -13,13 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Build
+    - name: Install OS dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y libpam0g libpam0g-dev
+    - name: Generate cargo lockfile
+      run: cargo generate-lockfile
+    - name: Cache cargo
+      uses: actions/cache@v2
+      env:
+        cache-name: cargo-target-dir
+        with:
+          path: target
+          key: ${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+    - name: Build and archive
+      run: |
         cargo build --release --verbose
-        tar -cf spookylock-linux.tar.gz target/release/spookylock target/release/spooklock-interface
-    - name: Upload Build
+        tar -cf spookylock-linux.tar.gz ./target/release/spookylock ./target/release/spookylock-interface
+    - name: Upload artifact
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
       env:
