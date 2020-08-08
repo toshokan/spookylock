@@ -23,10 +23,10 @@ jobs:
       uses: actions/cache@v2
       env:
         cache-name: cargo-target-dir
-        with:
-          path: |
-            ./target
-          key: ${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+      with:
+        path: |
+          ./target
+        key: ${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
     - name: Build and archive
       run: |
         cargo build --release --verbose
