@@ -24,7 +24,7 @@ jobs:
       env:
         cache-name: cargo-target-dir
         with:
-          path: target
+          path: ./target
           key: ${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
     - name: Build and archive
       run: |
