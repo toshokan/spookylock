@@ -15,8 +15,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build
       run: |
-	apt update
-	apt install -y libpam0g libpam0g-dev
+        apt update
+        apt install -y libpam0g libpam0g-dev
         cargo build --release --verbose
         tar -cf spookylock-linux.tar.gz target/release/spookylock target/release/spooklock-interface
     - name: Upload Build
