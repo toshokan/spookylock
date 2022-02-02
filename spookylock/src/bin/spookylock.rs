@@ -1,4 +1,4 @@
-use clap::Clap;
+use clap::Parser;
 use spookylock_sys::vt;
 use std::os::unix::{
     io::{AsRawFd, FromRawFd, RawFd},
@@ -7,7 +7,7 @@ use std::os::unix::{
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
-#[derive(Clap)]
+#[derive(Parser)]
 #[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
 struct Options {
     #[clap(short, long)]

@@ -1,13 +1,13 @@
 [package]
 name = "spookylock"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["toshokan <toshokan@shojigate.net>"]
 license = "MIT OR Apache-2.0"
 edition = "2018"
 
 [dependencies]
-clap = { version = "3.0.0-beta.1", features = ["derive"] }
+clap = { version = "^3", features = ["derive"] }
 spookylock-sys = { path = "../spookylock-sys" }
 termion = "1.5.4"
-cursive = { version = "^0.13", features = ["termion-backend"], default-features = false }
+cursive = { version = "^0.17", features = ["termion-backend"], default-features = false }
 pam = "^0.7"

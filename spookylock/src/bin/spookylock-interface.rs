@@ -1,7 +1,8 @@
-use clap::Clap;
+use clap::Parser;
 use cursive::Cursive;
+use cursive::view::{Selector, Nameable, Resizable};
 
-#[derive(Clap)]
+#[derive(Parser)]
 #[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
 struct Options {
     #[clap(short, long)]
@@ -14,7 +15,7 @@ fn try_login(s: &mut Cursive, user: &str, pw: &str) -> Result<(), pam::PamError>
     if let Ok(_) = auth.authenticate() {
         s.quit()
     } else {
-        s.call_on_id("pw", |v: &mut cursive::views::EditView| {
+        s.call_on(&Selector::Name("pw"), |v: &mut cursive::views::EditView| {
             v.set_content("");
         });
     }
@@ -24,7 +25,7 @@ fn try_login(s: &mut Cursive, user: &str, pw: &str) -> Result<(), pam::PamError>
 fn main() -> std::io::Result<()> {
     let opts = Options::parse();
 
-    let mut siv = Cursive::termion()?;
+    let mut siv = cursive::termion();
 
     let mut theme = cursive::theme::Theme::default();
     let mut palette = cursive::theme::Palette::default();
@@ -39,7 +40,7 @@ fn main() -> std::io::Result<()> {
 
     siv.set_theme(theme);
 
-    use cursive::view::{Boxable, Identifiable};
+    // use cursive::view::{Boxable, Identifiable};
 
     let view = cursive::views::LinearLayout::vertical()
         .child(cursive::views::DummyView)
@@ -53,14 +54,14 @@ fn main() -> std::io::Result<()> {
                         .on_submit(move |s, t| {
                             let _ = try_login(s, &opts.user, t);
                         })
-                        .with_id("pw")
+                        .with_name("pw")
                         .fixed_width(32),
                 ),
         );
 
     siv.add_layer(cursive::views::Dialog::around(view).title("Locked"));
     siv.add_global_callback(cursive::event::Event::CtrlChar('u'), |s: &mut Cursive| {
-        s.call_on_id("pw", |v: &mut cursive::views::EditView| {
+        s.call_on(&Selector::Name("pw"), |v: &mut cursive::views::EditView| {
             v.set_content("");
         });
     });
